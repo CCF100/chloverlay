@@ -153,8 +153,8 @@ declare -A KEEP_BUNDLED=(
 
 PATCHES=(
 	"${FILESDIR}"/0002-branding-change.patch
-	"${FILESDIR}"/0001-fmt-12.patch
-	"${FILESDIR}"/dolphin-2509-retroachievents-test.patch
+#	"${FILESDIR}"/0001-fmt-12.patch
+#	"${FILESDIR}"/dolphin-2509-retroachievents-test.patch
 )
 
 add_bundled_licenses() {
