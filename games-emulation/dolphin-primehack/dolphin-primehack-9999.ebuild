@@ -57,7 +57,7 @@ LICENSE="GPL-2+ BSD BSD-2 LGPL-2.1+ MIT ZLIB"
 SLOT="0"
 IUSE="
 	alsa bluetooth discord-presence doc egl +evdev ffmpeg +gui llvm log mgba
-	profile pulseaudio sdl systemd telemetry test upnp vulkan
+	profile pulseaudio sdl systemd telemetry test upnp vulkan retroachievements
 "
 REQUIRED_USE="
 	mgba? ( gui )
@@ -232,7 +232,7 @@ src_configure() {
 		-DOPROFILING=$(usex profile)
 		-DUSE_DISCORD_PRESENCE=$(usex discord-presence)
 		-DUSE_MGBA=$(usex mgba)
-		-DUSE_RETRO_ACHIEVEMENTS=OFF
+		-DUSE_RETRO_ACHIEVEMENTS=$(usex retroachievements)
 		-DUSE_UPNP=$(usex upnp)
 
 		-DCMAKE_DISABLE_FIND_PACKAGE_SYSTEMD=$(usex !systemd)
