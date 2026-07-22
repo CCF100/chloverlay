@@ -11,7 +11,7 @@ EGIT_REPO_URI="https://github.com/cemu-project/Cemu.git"
 LICENSE="MPL-2.0 ISC"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="+cubeb discord +sdl +vulkan -vcpkg"
+IUSE="+cubeb discord +sdl +vulkan -vcpkg +wxwidgets"
 
 DEPEND="app-arch/zarchive
 	app-arch/zstd
@@ -32,7 +32,7 @@ DEPEND="app-arch/zarchive
 	vulkan? ( dev-util/vulkan-headers )
 	x11-libs/gtk+:3[wayland]
 	x11-libs/libX11
-	x11-libs/wxGTK:3.3-gtk3[opengl]
+	wxwidgets? ( x11-libs/wxGTK:3.3-gtk3[opengl] )
 	virtual/libusb"
 RDEPEND="${DEPEND}"
 BDEPEND="media-libs/glm"
@@ -48,6 +48,13 @@ src_prepare() {
 }
 
 src_configure() {
+	if use vcpkg ; then
+		VCPKG_FORCE_DOWNLOADED_BINARIES=true
+		VCPKG_DISABLE_METRICS=1
+		./dependencies/vcpkg/bootstrap-vcpkg.sh
+	else
+		VCPKG_FORCE_SYSTEM_BINARIES=1
+	fi
 	local mycmakeargs=(
 		-DBUILD_SHARED_LIBS=OFF
 		"-DENABLE_CUBEB=$(usex cubeb)"
@@ -57,7 +64,7 @@ src_configure() {
 		"-DENABLE_SDL=$(usex sdl)"
 		"-DENABLE_VCPKG=$(usex vcpkg)"
 		"-DENABLE_VULKAN=$(usex vulkan)"
-		-DENABLE_WXWIDGETS=OFF
+		"-DENABLE_WXWIDGETS=$(usex wxwidgets)"
 		-DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF
 		-DALLOW_EXTERNAL_SPIRV_TOOLS=ON
 		-Wno-dev
@@ -67,11 +74,11 @@ src_configure() {
 }
 
 src_install() {
-	newbin "bin/${MY_PN}_relwithdebinfo" "$MY_PN"
+	newbin "bin/Cemu_relwithdebinfo" "${PN}"
 	insinto "/usr/share/${PN}/gameProfiles"
 	doins -r bin/gameProfiles/default/*
 	insinto "/usr/share/${PN}"
 	einstalldocs
-	newicon -s 128 src/resource/logo_icon.png "info.${PN}.${MY_PN}.png"
-	domenu "dist/linux/info.${PN}.${MY_PN}.desktop"
+	newicon -s 128 src/resource/logo_icon.png "info.${PN}.Cemu.png"
+	domenu "dist/linux/info.${PN}.Cemu.desktop"
 }
