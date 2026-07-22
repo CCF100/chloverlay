@@ -83,7 +83,7 @@ IUSE=""
 
 # A space delimited list of portage features to restrict. man 5 ebuild
 # for details.  Usually not needed.
-#RESTRICT="strip"
+RESTRICT="network-sandbox sandbox usersandbox userpriv"
 
 
 # Run-time dependencies. Must be defined to whatever this depends on to run.
