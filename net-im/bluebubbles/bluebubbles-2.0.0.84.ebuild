@@ -83,7 +83,8 @@ IUSE=""
 
 # A space delimited list of portage features to restrict. man 5 ebuild
 # for details.  Usually not needed.
-RESTRICT="network-sandbox sandbox usersandbox userpriv"
+RESTRICT=""
+#Flutter doesn't play nice with these portage features "network-sandbox sandbox usersandbox userpriv"
 
 
 # Run-time dependencies. Must be defined to whatever this depends on to run.
