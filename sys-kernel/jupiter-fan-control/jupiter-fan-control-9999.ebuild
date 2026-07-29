@@ -19,7 +19,7 @@ EAPI=8
 # inherit lists eclasses to inherit functions from. For example, an ebuild
 # that needs the eautoreconf function from autotools.eclass won't work
 # without the following line:
-PYTHON_COMPAT=( python{3_6,3_{14,15}} pypy )
+PYTHON_COMPAT=( python{2_7,3_{8,9,10,11,12,13,14,15}} pypy )
 EGIT_BRANCH="testing"
 inherit python-single-r1 git-r3
 
@@ -97,7 +97,9 @@ IUSE=""
 # had installed on your system when you tested the package.  Then
 # other users hopefully won't be caught without the right version of
 # a dependency.
-RDEPEND="sys-apps/dmidecode"
+RDEPEND="sys-apps/dmidecode
+        $(python_gen_cond_dep \
+  'dev-lang/python[${PYTHON_USEDEP}]' )"
 
 # Build-time dependencies that need to be binary compatible with the system
 # being built (CHOST). These include libraries that we link against.
@@ -111,26 +113,9 @@ RDEPEND="sys-apps/dmidecode"
 
 # The following src_configure function is implemented as default by portage, so
 # you only need to call it if you need a different behaviour.
-#src_configure() {
-	# Most open-source packages use GNU autoconf for configuration.
-	# The default, quickest (and preferred) way of running configure is:
-	#econf
-	#
-	# You could use something similar to the following lines to
-	# configure your package before compilation.  The "|| die" portion
-	# at the end will stop the build process if the command fails.
-	# You should use this at the end of critical commands in the build
-	# process.  (Hint: Most commands are critical, that is, the build
-	# process should abort if they aren't successful.)
-	#./configure \
-	#	--host=${CHOST} \
-	#	--prefix=/usr \
-	#	--infodir=/usr/share/info \
-	#	--mandir=/usr/share/man || die
-	# Note the use of --infodir and --mandir, above. This is to make
-	# this package FHS 2.2-compliant.  For more information, see
-	#   https://wiki.linuxfoundation.org/lsb/fhs
-#}
+src_configure() {
+	python-single-r1_pkg_setup
+}
 
 # The following src_compile function is implemented as default by portage, so
 # you only need to call it, if you need different behaviour.
