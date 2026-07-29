@@ -155,8 +155,8 @@ src_install() {
 	insinto /usr/share/${PN}/
 	into /usr/share/${PN}/
 	insopts -m755
-	dobin fancontrol.py
-	dobin PID.py
+	doins fancontrol.py
+	doins PID.py
 	doins jupiter-fan-control-config.yaml
 	doins quiet.yaml
 	doins stable.yaml
