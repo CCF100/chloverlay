@@ -82,7 +82,8 @@ KEYWORDS=""
 # Comprehensive list of any and all USE flags leveraged in the ebuild,
 # with some exceptions, e.g., ARCH specific flags like "amd64" or "ppc".
 # Not needed if the ebuild doesn't use any USE flags.
-IUSE=""
+IUSE="$(python_gen_useflags)"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # A space delimited list of portage features to restrict. man 5 ebuild
 # for details.  Usually not needed.
@@ -97,9 +98,9 @@ IUSE=""
 # had installed on your system when you tested the package.  Then
 # other users hopefully won't be caught without the right version of
 # a dependency.
-RDEPEND="sys-apps/dmidecode
-        $(python_gen_cond_dep \
-  'dev-lang/python[${PYTHON_USEDEP}]' )"
+DEPEND="sys-apps/dmidecode"
+#        $(python_gen_impl_dep \
+#  'dev-lang/python[${PYTHON_USEDEP}]' )"
 
 # Build-time dependencies that need to be binary compatible with the system
 # being built (CHOST). These include libraries that we link against.
