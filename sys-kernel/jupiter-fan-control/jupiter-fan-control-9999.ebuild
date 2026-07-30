@@ -19,7 +19,7 @@ EAPI=8
 # inherit lists eclasses to inherit functions from. For example, an ebuild
 # that needs the eautoreconf function from autotools.eclass won't work
 # without the following line:
-PYTHON_COMPAT=( python{2_7,3_{8,9,10,11,12,13,14,15}} pypy )
+PYTHON_COMPAT=( python{2_7,3_{6,7,8,9,10,11,12,13,14,15}} pypy )
 EGIT_BRANCH="testing"
 inherit python-single-r1 git-r3
 
