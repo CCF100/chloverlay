@@ -52,10 +52,29 @@ BDEPEND="dev-libs/cxxopts
 CMAKE_BUILD_TYPE="RelWithDebInfo"
 
 src_prepare() {
+	# hardcode branch value until I can figure out a way of detecting this
+	#einfo "Current branch: $(git branch --show-current)"
+	einfo "Current commit: $(git rev-parse --short HEAD)"
+	cat <<-EOF > "${S}/version.h" || die
+	#ifndef GENERATED_VERSION_H_
+	#define GENERATED_VERSION_H_
+	#define XE_BUILD_BRANCH "canary_experimental"
+	#define XE_BUILD_COMMIT "$(git rev-parse HEAD)"
+	#define XE_BUILD_COMMIT_SHORT "$(git rev-parse --short HEAD)"
+	#define XE_BUILD_DATE __DATE__
+	#endif  // GENERATED_VERSION_H_
+	EOF
 	cmake_src_prepare
 }
 
 src_configure() {
+	CC="clang"
+	CPP="clang-cpp" # necessary for xorg-server and possibly other packages
+	CXX="clang++"
+	AR="llvm-ar"
+	NM="llvm-nm"
+	RANLIB="llvm-ranlib"
+
 	if tc-is-gcc; then
 		# Causes startup error in libstdc++ HashTable with GCC.
 		filter-lto
@@ -64,6 +83,7 @@ src_configure() {
 		# These flags result in the emulator showing no video (Rocket/Tiger Lake).
 		filter-flags -march=* -mtune=*
 	fi
+	CXXFLAGS="${CXXFLAGS} -Wno-unused-result"
 	local mycmakeargs=(
 		-DXENIA_BUILD_TESTS=OFF
 		"-DXENIA_BUILD_DISCORD=$(usex discord ON OFF)"
