@@ -1,0 +1,189 @@
+From 83ad4a6379ec32b84c60571877b3513b750ce1ed Mon Sep 17 00:00:00 2001
+From: Chloe Christine Fontenot <foley2431@gmail.com>
+Date: Sat, 22 Aug 2026 13:55:11 -0500
+Subject: [PATCH] patch for system installed OGRE-next
+
+---
+ CMake/Packages/FindOGRE_next.cmake   | 103 +++++++++++++++++++++++----
+ CMake/Utils/MyGUIConfigTargets.cmake |  12 ++--
+ Common/CMakeLists.txt                |   4 +-
+ 3 files changed, 97 insertions(+), 22 deletions(-)
+
+diff --git a/CMake/Packages/FindOGRE_next.cmake b/CMake/Packages/FindOGRE_next.cmake
+index de43200..0c34f44 100644
+--- a/CMake/Packages/FindOGRE_next.cmake
++++ b/CMake/Packages/FindOGRE_next.cmake
+@@ -1,22 +1,97 @@
+ # Set OGRE-next includes and library
+ 
+-message(STATUS "Ogre3:  Setting fixed paths, one up")
++include(FindPackageHandleStandardArgs)
+ 
+-get_filename_component(DIR_ONE_ABOVE ../ ABSOLUTE)
+-message(STATUS ${DIR_ONE_ABOVE})
++find_path(_OGRE_MAIN_INCLUDE_DIR
++    NAMES Ogre.h
++    PATHS
++        /usr/include
++        /usr/local/include
++    PATH_SUFFIXES
++        OGRE
++)
+ 
+-set(OGRE_NEXT ${DIR_ONE_ABOVE}/Ogre/ogre-next)
+-#set(OGRE_NEXT "../Ogre/ogre-next")
++set(OGRE_INCLUDE_DIR "${_OGRE_MAIN_INCLUDE_DIR}")
+ 
+-set(OGRE_CONFIG_INCLUDE_DIR ${OGRE_NEXT}/build/${CMAKE_BUILD_TYPE}/include)
+-set(OGRE_INCLUDE_DIR ${OGRE_NEXT}/OgreMain/include)
+-set(OGRE_LIBRARIES ${OGRE_NEXT}/build/${CMAKE_BUILD_TYPE}/lib/libOgreMain.so.3.0)
+-set(OGRE_LIB_DIR ${OGRE_NEXT}/build/${CMAKE_BUILD_TYPE}/lib)
++find_path(OGRE_HLMS_INCLUDE_DIR
++    NAMES OgreHlmsManager.h
++    PATHS
++        /usr/include
++        /usr/local/include
++    PATH_SUFFIXES
++        OGRE
++)
+ 
+-message(STATUS "Ogre3    config: " ${OGRE_CONFIG_INCLUDE_DIR})
+-message(STATUS "Ogre3   include: " ${OGRE_INCLUDE_DIR})
+-#message(STATUS "Ogre3    source: " ${OGRE_SOURCE_DIR})
+-message(STATUS "Ogre3 libraries: " ${OGRE_LIBRARIES})
+-message(STATUS "Ogre3   lib dir: " ${OGRE_LIB_DIR})
++find_path(OGRE_HLMS_COMMON_INCLUDE_DIR
++    NAMES OgreHlmsTextureBaseClass.h
++    PATHS
++        /usr/include
++        /usr/local/include
++    PATH_SUFFIXES
++        OGRE/Hlms/Common
++)
++
++find_path(OGRE_HLMS_UNLIT_INCLUDE_DIR
++    NAMES OgreHlmsUnlitDatablock.h
++    PATHS
++        /usr/include
++        /usr/local/include
++    PATH_SUFFIXES
++        OGRE/Hlms/Unlit
++)
++
++set(OGRE_INCLUDE_DIR
++    "${_OGRE_MAIN_INCLUDE_DIR}"
++    "${OGRE_HLMS_INCLUDE_DIR}"
++    "${OGRE_HLMS_UNLIT_INCLUDE_DIR}"
++    "${OGRE_HLMS_COMMON_INCLUDE_DIR}"
++)
++
++set(OGRE_INCLUDE_DIRS "${OGRE_INCLUDE_DIR}")
++
++find_path(OGRE_CONFIG_INCLUDE_DIR
++    NAMES OgreBuildSettings.h
++    PATHS
++        /usr/include
++        /usr/local/include
++    PATH_SUFFIXES
++        OGRE
++)
++
++if(NOT OGRE_CONFIG_INCLUDE_DIR)
++    set(OGRE_CONFIG_INCLUDE_DIR "${_OGRE_MAIN_INCLUDE_DIR}")
++endif()
++
++find_library(OGRE_MAIN_LIBRARY
++    NAMES OgreMain
++    PATHS
++        /usr/lib64
++        /usr/lib
++        /usr/local/lib
++)
++
++set(OGRE_LIBRARIES "${OGRE_MAIN_LIBRARY}")
++
++if(OGRE_MAIN_LIBRARY)
++    get_filename_component(
++        OGRE_LIB_DIR
++        "${OGRE_MAIN_LIBRARY}"
++        DIRECTORY
++    )
++endif()
++
++find_package_handle_standard_args(OGRE_next
++    REQUIRED_VARS
++        OGRE_INCLUDE_DIR
++        OGRE_MAIN_LIBRARY
++)
++
++mark_as_advanced(
++    _OGRE_MAIN_INCLUDE_DIR
++    OGRE_INCLUDE_DIR
++    OGRE_INCLUDE_DIRS
++    OGRE_CONFIG_INCLUDE_DIR
++    OGRE_MAIN_LIBRARY
++)
+ 
+ SET(OGRE_FOUND TRUE)
+diff --git a/CMake/Utils/MyGUIConfigTargets.cmake b/CMake/Utils/MyGUIConfigTargets.cmake
+index 6324bfa..066ca92 100644
+--- a/CMake/Utils/MyGUIConfigTargets.cmake
++++ b/CMake/Utils/MyGUIConfigTargets.cmake
+@@ -120,8 +120,8 @@ function(mygui_app PROJECTNAME SOLUTIONFOLDER)
+ 		include_directories(../../Common/Base/Ogre)
+ 		add_definitions("-DMYGUI_OGRE_PLATFORM")
+ 		include_directories(
+-			${MYGUI_SOURCE_DIR}/Platforms/Ogre/OgrePlatform/include
+-			${OGRE_INCLUDE_DIR}
++			${MYGUI_SOURCE_DIR}/Platforms/Ogre/Ogre2Platform/include
++			${OGRE_INCLUDE_DIRS}
+ 		)
+ 		link_directories(${OGRE_LIB_DIR})
+ 	elseif(MYGUI_RENDERSYSTEM EQUAL 4)
+@@ -168,7 +168,7 @@ function(mygui_app PROJECTNAME SOLUTIONFOLDER)
+ 		add_definitions("-DMYGUI_OGRE2_PLATFORM")
+ 		include_directories(
+ 			${MYGUI_SOURCE_DIR}/Platforms/Ogre2/Ogre2Platform/include
+-			${OGRE_INCLUDE_DIR}
++			${OGRE_INCLUDE_DIRS}
+ 		)
+ 		link_directories(${OGRE_LIB_DIR})
+ 	endif()
+@@ -275,8 +275,8 @@ function(mygui_dll PROJECTNAME SOLUTIONFOLDER)
+ 		include_directories(../../Common/Base/Ogre)
+ 		add_definitions("-DMYGUI_OGRE_PLATFORM")
+ 		include_directories(
+-			${MYGUI_SOURCE_DIR}/Platforms/Ogre/OgrePlatform/include
+-			${OGRE_INCLUDE_DIR}
++			${MYGUI_SOURCE_DIR}/Platforms/Ogre/Ogre2Platform/include
++			${OGRE_INCLUDE_DIRS}
+ 		)
+ 		link_directories(${OGRE_LIB_DIR})
+ 	elseif(MYGUI_RENDERSYSTEM EQUAL 4)
+@@ -324,7 +324,7 @@ function(mygui_dll PROJECTNAME SOLUTIONFOLDER)
+ 		add_definitions("-DMYGUI_OGRE2_PLATFORM")
+ 		include_directories(
+ 			${MYGUI_SOURCE_DIR}/Platforms/Ogre2/Ogre2Platform/include
+-			${OGRE_INCLUDE_DIR}
++			${OGRE_INCLUDE_DIRS}
+ 		)
+ 		link_directories(${OGRE_LIB_DIR})
+ 	endif()
+diff --git a/Common/CMakeLists.txt b/Common/CMakeLists.txt
+index 39a6c2c..4988a58 100644
+--- a/Common/CMakeLists.txt
++++ b/Common/CMakeLists.txt
+@@ -69,8 +69,8 @@ elseif(MYGUI_RENDERSYSTEM EQUAL 3)
+ 	mygui_add_base_manager_source(Ogre)
+ 	add_definitions("-DMYGUI_OGRE_PLATFORM")
+ 	include_directories(
+-		${MYGUI_SOURCE_DIR}/Platforms/Ogre/OgrePlatform/include
+-		${OGRE_INCLUDE_DIR}
++		${MYGUI_SOURCE_DIR}/Platforms/Ogre/Ogre2Platform/include
++		${OGRE_INCLUDE_DIRS}
+ 	)
+ 	link_directories(${OGRE_LIB_DIR})
+ elseif(MYGUI_RENDERSYSTEM EQUAL 4)
+-- 
+2.55.0
+

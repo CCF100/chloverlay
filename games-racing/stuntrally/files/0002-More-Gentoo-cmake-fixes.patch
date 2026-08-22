@@ -1,0 +1,31 @@
+From d447260f08e629c53454cdb2f86827127850a1e0 Mon Sep 17 00:00:00 2001
+From: Chloe Christine Fontenot <foley2431@gmail.com>
+Date: Sat, 22 Aug 2026 16:27:44 -0500
+Subject: [PATCH 4/4] More Gentoo cmake fixes
+
+---
+ CMake/DependenciesConfig.cmake | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/CMake/DependenciesConfig.cmake b/CMake/DependenciesConfig.cmake
+index d74f20d..c046929 100644
+--- a/CMake/DependenciesConfig.cmake
++++ b/CMake/DependenciesConfig.cmake
+@@ -17,7 +17,13 @@ if (OGRE_FOUND AND NOT TARGET OGRE::OGRE)
+         ${OGRE_HlmsPbs_LIBRARIES}
+         ${OGRE_HlmsUnlit_LIBRARIES}
+     )
+-    target_include_directories(OGRE::OGRE INTERFACE ${OGRE_INCLUDE_DIRS})
++    target_include_directories(OGRE::OGRE INTERFACE
++	${OGRE_INCLUDE_DIRS}
++        ${OGRE_INCLUDE_DIR}/Hlms/Common
++        ${OGRE_INCLUDE_DIR}/Hlms/Unlit
++	${OGRE_INCLUDE_DIR}/Hlms/Pbs
++	${OGRE_INCLUDE_DIR}/Overlay
++)
+ endif ()
+ 
+ find_package(OpenAL REQUIRED)
+-- 
+2.55.0
+

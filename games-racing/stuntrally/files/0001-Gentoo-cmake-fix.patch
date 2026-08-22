@@ -1,0 +1,60 @@
+From 74d34f7cd874dee353bae07f93c7dd692e353bd8 Mon Sep 17 00:00:00 2001
+From: Chloe Christine Fontenot <foley2431@gmail.com>
+Date: Sat, 22 Aug 2026 16:05:03 -0500
+Subject: [PATCH 3/3] Gentoo cmake fix
+
+---
+ CMake/AddMissingTargets.cmake  |  4 ++--
+ CMake/DependenciesConfig.cmake | 14 +++++++++++++-
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/CMake/AddMissingTargets.cmake b/CMake/AddMissingTargets.cmake
+index 2f43f18..f295c24 100644
+--- a/CMake/AddMissingTargets.cmake
++++ b/CMake/AddMissingTargets.cmake
+@@ -1,5 +1,5 @@
+ if (NOT TARGET boost::boost)
+-    find_package(Boost REQUIRED COMPONENTS system thread filesystem)
++    find_package(Boost REQUIRED COMPONENTS thread filesystem)
+     message(STATUS "Adding boost::boost target")
+     add_library(boost::boost INTERFACE IMPORTED)
+     set_target_properties(boost::boost PROPERTIES
+@@ -23,4 +23,4 @@ if (NOT TARGET rapidjson)
+     set_target_properties(rapidjson PROPERTIES
+             INTERFACE_INCLUDE_DIRECTORIES "${RAPIDJSON_INCLUDE_DIRS}"
+             )
+-endif ()
+\ No newline at end of file
++endif ()
+diff --git a/CMake/DependenciesConfig.cmake b/CMake/DependenciesConfig.cmake
+index aca28ea..d74f20d 100644
+--- a/CMake/DependenciesConfig.cmake
++++ b/CMake/DependenciesConfig.cmake
+@@ -8,10 +8,22 @@ find_package(enet REQUIRED)
+ find_package(MyGUI REQUIRED)
+ find_package(Ogg REQUIRED)
+ find_package(OGRE REQUIRED)
++
++if (OGRE_FOUND AND NOT TARGET OGRE::OGRE)
++    add_library(OGRE::OGRE INTERFACE IMPORTED)
++    target_link_libraries(OGRE::OGRE INTERFACE
++        ${OGRE_LIBRARIES}
++        ${OGRE_Overlay_LIBRARIES}
++        ${OGRE_HlmsPbs_LIBRARIES}
++        ${OGRE_HlmsUnlit_LIBRARIES}
++    )
++    target_include_directories(OGRE::OGRE INTERFACE ${OGRE_INCLUDE_DIRS})
++endif ()
++
+ find_package(OpenAL REQUIRED)
+ find_package(RapidJSON REQUIRED)
+ find_package(SDL2 REQUIRED)
+ find_package(tinyxml2 REQUIRED)
+ find_package(Vorbis REQUIRED)
+ 
+-include(AddMissingTargets)
+\ No newline at end of file
++include(AddMissingTargets)
+-- 
+2.55.0
+
