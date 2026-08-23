@@ -1,5 +1,5 @@
 EAPI=8
-inherit cmake git-r3 alternatives
+inherit cmake git-r3 alternatives desktop
 DESCRIPTION="3D racing game with Sci-Fi elements and own Track Editor. The main repository with sources and data. Using Ogre-Next 3.0 and VDrift."
 HOMEPAGE="https://cryham.org/stuntrally/"
 EGIT_REPO_URI="https://github.com/stuntrally/stuntrally3.git"
@@ -35,14 +35,7 @@ src_unpack() {
 }
 
 
-#src_prepare() {
-#	default
-#	mv -v CMake CMakeCI
-#	mv -v CMakeManual CMake
-#	mv -v CMakeLists.txt  CMakeListsCI.txt
-#	mv -v CMakeLists-Debian.txt CMakeLists.txt
-#	cmake_src_prepare
-#}
+#src_prepare() {}
 
 src_configure() {
 	local mycmakeargs=(
@@ -57,12 +50,28 @@ src_configure() {
 
 src_install() {
 	into /usr/share/sr3
-	dobin bin/RelWithDebInfo/stuntrally3
-	dobin bin/RelWithDebInfo/sr-translator
-	dobin bin/RelWithDebInfo/sr-editor3
 	insinto /usr/share/sr3
+
+	insopts -m777
+	doins bin/RelWithDebInfo/stuntrally3
+	doins bin/RelWithDebInfo/sr-translator
+	doins bin/RelWithDebInfo/sr-editor3
+
 	doins bin/RelWithDebInfo/plugins.cfg
-	dodir data
-	dodir config
-	alternatives_auto_makesym
+	doins -r data
+	doins -r config
+
+	into /usr
+	dodir /usr/bin
+	cp -v ${FILESDIR}/stuntrally3.sh ${D}"/usr/bin/stuntrally3"
+	# the binary is dumb...
+	dodir /usr/lib64/OGRE
+	for i in /usr/lib64/OGRE/*.so.*
+	do
+        	b=$(basename "$i")
+        	ln -sv "$i" "${D}/usr/share/sr3/${b%.*}.0"
+	done
+	ln -sv /usr/share/sr3/sr-translator ${D}"/usr/bin/sr-translator"
+	ln -sv /usr/share/sr3/sr-editor3 ${D}"/usr/bin/sr-editor3"
+	make_desktop_entry /usr/bin/stuntrally3
 }
