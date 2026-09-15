@@ -160,7 +160,7 @@ src_install() {
 	dobin ${WORKDIR}/${PN}
 	insinto /usr/share/applications
 	doins ${WORKDIR}/${PN}.desktop || die
-	insinto /usr/share/icons
+	insinto /usr/share/icons/hicolor
 	doins -r assets/icon/linux/*
 	einstalldocs
 }
