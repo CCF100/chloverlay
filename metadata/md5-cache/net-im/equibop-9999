@@ -1,0 +1,12 @@
+BDEPEND=sys-apps/pnpm net-libs/nodejs[npm] dev-lang/bun-bin >=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=compile install unpack
+DESCRIPTION=Equibop is a fork of Vesktop.
+EAPI=8
+HOMEPAGE=https://github.com/Equicord/Equibop
+INHERIT=desktop git-r3
+LICENSE=GPL-3
+PROPERTIES=live
+RESTRICT=network-sandbox
+SLOT=0
+_eclasses_=desktop	e447b5f77146d69797e9f03ff177f3f1	git-r3	e6c2f983e006e805160436c75a0c1562
+_md5_=8fddb31bb19842da0dce3e8f6b437b5c
