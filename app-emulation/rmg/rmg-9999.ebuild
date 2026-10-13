@@ -17,7 +17,7 @@ IUSE=""
 
 DEPEND=""
 RDEPEND="${DEPEND} dev-libs/hidapi media-libs/libsamplerate media-libs/speexdsp sys-libs/zlib[minizip] media-libs/libsdl3 media-libs/freetype =dev-qt/qtbase-6* dev-qt/qtsvg dev-qt/qtwebsockets"
-BDEPEND="dev-vcs/git dev-lang/nasm dev-build/cmake dev-util/vulkan-headers"
+BDEPEND="dev-vcs/git dev-lang/nasm dev-build/cmake dev-util/vulkan-headers media-libs/sdl3-net"
 
 src_configure() {
         #mkdir ${S}/build
