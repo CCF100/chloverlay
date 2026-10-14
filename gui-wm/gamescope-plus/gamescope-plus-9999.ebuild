@@ -36,6 +36,7 @@ SLOT="0"
 IUSE="avif libei pipewire +sdl +wsi-layer"
 
 RDEPEND="
+	dev-cpp/benchmark
 	dev-lang/luajit:2=
 	>=dev-libs/libinput-1.14.0:=
 	>=dev-libs/wayland-1.23.1
