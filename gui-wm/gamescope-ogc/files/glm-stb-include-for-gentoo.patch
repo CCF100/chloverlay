@@ -1,47 +1,55 @@
-From d4763d4add9b732f72ce9015410ba2f8f18dee6e Mon Sep 17 00:00:00 2001
-From: Chloe Christine Fontenot <foley2431@gmail.com>
-Date: Tue, 21 Jul 2026 16:49:39 -0500
-Subject: [PATCH 1/3] Make glm and stb an include instead of an internal
- dependency
+From 38cc4443e145a6ae09bf57bd465e15112c1215c2 Mon Sep 17 00:00:00 2001
+From: Caleb Fontenot <foley2431@gmail.com>
+Date: Sat, 17 Oct 2026 14:14:09 -0500
+Subject: [PATCH] Make glm and stb an include instead of an internal dependency
 
 ---
- layer/meson.build           |  7 ++++---
- meson.build                 |  6 ++----
- src/meson.build             | 10 +++++-----
- subprojects/.wraplock       |  0
- subprojects/libliftoff.wrap |  2 ++
- 5 files changed, 13 insertions(+), 12 deletions(-)
+ .wraplock                      |  0
+ layer/meson.build              |  3 ++-
+ libliftoff.wrap                |  2 ++
+ meson.build                    |  6 ++----
+ src/meson.build                | 10 +++++-----
+ src/reshade_effect_manager.cpp |  2 +-
+ src/steamcompmgr.cpp           |  2 +-
+ subprojects/.wraplock          |  0
+ subprojects/libliftoff.wrap    |  2 ++
+ tests/meson.build              |  7 ++++---
+ 10 files changed, 19 insertions(+), 15 deletions(-)
+ create mode 100644 .wraplock
+ create mode 100644 libliftoff.wrap
  create mode 100644 subprojects/.wraplock
  create mode 100644 subprojects/libliftoff.wrap
 
+diff --git a/.wraplock b/.wraplock
+new file mode 100644
+index 00000000..e69de29b
 diff --git a/layer/meson.build b/layer/meson.build
-index 830cd89..efd98d0 100644
+index fba59a14..313c7ef3 100644
 --- a/layer/meson.build
 +++ b/layer/meson.build
-@@ -4,8 +4,9 @@ dep_x11_xcb = dependency('x11-xcb')
+@@ -12,7 +12,8 @@ dep_x11_xcb = dependency('x11-xcb')
  wayland_client = dependency('wayland-client')
  
- gamescope_wsi_layer = shared_library('VkLayer_FROG_gamescope_wsi_' + build_machine.cpu_family(), 'VkLayer_FROG_gamescope_wsi.cpp', protocols_client_src,
--  dependencies     : [ vkroots_dep, dep_xcb, dep_x11, dep_x11_xcb, glm_dep, wayland_client ],
--  install          : true )
-+  dependencies          : [ vkroots_dep, dep_xcb, dep_x11, dep_x11_xcb, wayland_client ],
-+  include_directories   : [ glm_include ],
-+  install               : true )
+ gamescope_wsi_layer = shared_library('VkLayer_FROG_gamescope_wsi_' + host_machine.cpu_family(), 'VkLayer_FROG_gamescope_wsi.cpp', protocols_client_src,
+-  dependencies     : [ vkroots_dep, vulkan_dep, dep_xcb, dep_x11, dep_x11_xcb, glm_dep, wayland_client ],
++  dependencies     : [ vkroots_dep, vulkan_dep, dep_xcb, dep_x11, dep_x11_xcb, wayland_client ],
++  include_directories:[glm_include],
+   install          : true )
  
  out_lib_dir = join_paths(prefix, lib_dir)
- 
-@@ -15,4 +16,4 @@ configure_file(
-     configuration : {'family' : build_machine.cpu_family(), 'lib_dir' : out_lib_dir },
-     install       : true,
-     install_dir   : join_paths(data_dir, 'vulkan', 'implicit_layer.d'),
--)
-\ No newline at end of file
-+)
+diff --git a/libliftoff.wrap b/libliftoff.wrap
+new file mode 100644
+index 00000000..0d060caa
+--- /dev/null
++++ b/libliftoff.wrap
+@@ -0,0 +1,2 @@
++[wrap-redirect]
++filename = wlroots/subprojects/libliftoff.wrap
 diff --git a/meson.build b/meson.build
-index f7662ca..cd33386 100644
+index 7a3ca94d..bc9d7467 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -50,10 +50,8 @@ dep_x11 = dependency('x11')
+@@ -51,10 +51,8 @@ dep_x11 = dependency('x11')
  dep_wayland = dependency('wayland-client')
  vulkan_dep = dependency('vulkan')
  
@@ -55,10 +63,10 @@ index f7662ca..cd33386 100644
  if get_option('enable_openvr_support')
    openvr_dep = dependency('openvr', version: '>= 2.7', required : false)
 diff --git a/src/meson.build b/src/meson.build
-index 425e790..56cf623 100644
+index da05f9d8..6e5955a3 100644
 --- a/src/meson.build
 +++ b/src/meson.build
-@@ -192,13 +192,13 @@ gamescope_version = configure_file(
+@@ -193,13 +193,13 @@ gamescope_version = configure_file(
    executable(
      'gamescope',
      src, reshade_src, gamescope_version,
@@ -75,7 +83,7 @@ index 425e790..56cf623 100644
        libdecor_dep, eis_dep, luajit_dep, libinput_dep, pixman_dep, udev_dep,
      ],
      install: true,
-@@ -220,9 +220,9 @@ endif
+@@ -221,9 +221,9 @@ endif
  executable('gamescopereaper', ['Apps/gamescopereaper.cpp', gamescope_core_src], gamescope_version, dependencies: [cap_dep], install:true )
  
  benchmark_dep = dependency('benchmark', required: get_option('benchmark'), disabler: true)
@@ -83,64 +91,12 @@ index 425e790..56cf623 100644
 +executable('gamescope_color_microbench', ['color_bench.cpp', 'color_helpers.cpp'], gamescope_core_src, gamescope_version, dependencies:[benchmark_dep, cap_dep], include_directories:[glm_include])
  
 -executable('gamescope_color_tests', ['color_tests.cpp', 'color_helpers.cpp'], gamescope_core_src, gamescope_version, dependencies:[glm_dep, cap_dep])
-+executable('gamescope_color_tests', ['color_tests.cpp', 'color_helpers.cpp'], gamescope_core_src, gamescope_version, dependencies:[cap_dep], include_directories: [glm_include])
++executable('gamescope_color_tests', ['color_tests.cpp', 'color_helpers.cpp'], gamescope_core_src, gamescope_version, dependencies:[ cap_dep], include_directories:[glm_include])
  
- executable('gamescopectl', ['Apps/gamescopectl.cpp'], gamescope_core_src, gamescope_version, protocols_client_src, dependencies: [dep_wayland, cap_dep], install:true )
+ executable('gamescopectl', ['Apps/gamescopectl.cpp'], gamescope_core_src, gamescope_version, protocols_client_src, dependencies: [dep_wayland, cap_dep], install: true, cpp_args: ['-Werror=switch-enum'])
  
-diff --git a/subprojects/.wraplock b/subprojects/.wraplock
-new file mode 100644
-index 0000000..e69de29
-diff --git a/subprojects/libliftoff.wrap b/subprojects/libliftoff.wrap
-new file mode 100644
-index 0000000..0d060ca
---- /dev/null
-+++ b/subprojects/libliftoff.wrap
-@@ -0,0 +1,2 @@
-+[wrap-redirect]
-+filename = wlroots/subprojects/libliftoff.wrap
--- 
-2.55.0
-
-
-From 53c2a6602fa91e1685591531c2f3cb63c2ddd6fc Mon Sep 17 00:00:00 2001
-From: Chloe Christine Fontenot <foley2431@gmail.com>
-Date: Tue, 21 Jul 2026 16:57:58 -0500
-Subject: [PATCH 2/3] Make glm and stb an include instead of an internal
- dependency
-
----
- src/steamcompmgr.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index c782e10..ca4eba7 100644
---- a/src/steamcompmgr.cpp
-+++ b/src/steamcompmgr.cpp
-@@ -117,7 +117,7 @@ static const int g_nBaseCursorScale = 36;
- #define STB_IMAGE_WRITE_IMPLEMENTATION
- #include <stb_image.h>
- #include <stb_image_write.h>
--#include <stb_image_resize.h>
-+#include <deprecated/stb_image_resize.h>
- 
- #define GPUVIS_TRACE_IMPLEMENTATION
- #include "gpuvis_trace_utils.h"
--- 
-2.55.0
-
-
-From 8c48c4d43a0b0e5e13af9ab4b2d2e56e5c4dae95 Mon Sep 17 00:00:00 2001
-From: Chloe Christine Fontenot <foley2431@gmail.com>
-Date: Tue, 21 Jul 2026 17:00:38 -0500
-Subject: [PATCH 3/3] Make glm and stb an include instead of an internal
- dependency
-
----
- src/reshade_effect_manager.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/src/reshade_effect_manager.cpp b/src/reshade_effect_manager.cpp
-index 959a973..cd1d39e 100644
+index 959a9737..cd1d39ef 100644
 --- a/src/reshade_effect_manager.cpp
 +++ b/src/reshade_effect_manager.cpp
 @@ -17,7 +17,7 @@
@@ -152,6 +108,55 @@ index 959a973..cd1d39e 100644
  
  #include <mutex>
  
+diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
+index 7c84d44c..3b187680 100644
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -120,7 +120,7 @@ static const int g_nBaseCursorScale = 36;
+ #define STB_IMAGE_WRITE_IMPLEMENTATION
+ #include <stb_image.h>
+ #include <stb_image_write.h>
+-#include <stb_image_resize.h>
++#include <deprecated/stb_image_resize.h>
+ 
+ #define GPUVIS_TRACE_IMPLEMENTATION
+ #include "gpuvis_trace_utils.h"
+diff --git a/subprojects/.wraplock b/subprojects/.wraplock
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/subprojects/libliftoff.wrap b/subprojects/libliftoff.wrap
+new file mode 100644
+index 00000000..0d060caa
+--- /dev/null
++++ b/subprojects/libliftoff.wrap
+@@ -0,0 +1,2 @@
++[wrap-redirect]
++filename = wlroots/subprojects/libliftoff.wrap
+diff --git a/tests/meson.build b/tests/meson.build
+index 83f388b4..becaf89c 100644
+--- a/tests/meson.build
++++ b/tests/meson.build
+@@ -9,8 +9,8 @@ endforeach
+ gamescope_tests = executable(
+ 	'gamescope_tests',
+ 	unittest_src + ['../src/color_helpers.cpp', 'test_color_helpers.cpp', 'test_convar.cpp', 'test_focus_placement.cpp', 'test_mangoapp_config.cpp', 'test_mangoapp_control.cpp', 'test_mode_list.cpp', 'test_present_timing_schedule.cpp', 'test_process.cpp', 'test_swapchain_wire.cpp', 'test_upscale.cpp', 'test_utils_commit_queue.cpp', 'test_utils_parsers.cpp', 'test_utils_string.cpp', 'test_utils_vblank_schedule.cpp', 'test_vrclient_detect.cpp'] + swapchain_client_src + limiter_client_src + [swapchain_server_header],
+-	include_directories: [srcdir, sol2_include],
+-	dependencies: [catch2_dep, luajit_dep, cap_dep, drm_dep, glm_dep, vulkan_dep, wlroots_dep, dep_wayland, wayland_server],
++	include_directories: [srcdir, sol2_include, glm_include],
++	dependencies: [catch2_dep, luajit_dep, cap_dep, drm_dep, vulkan_dep, wlroots_dep, dep_wayland, wayland_server],
+ 	cpp_args: gamescope_cpp_args,
+ )
+ 
+@@ -36,7 +36,8 @@ if get_option('enable_gamescope_wsi_layer')
+ 	present_timing_layer_tests = executable(
+ 		'present_timing_layer_tests',
+ 		['test_present_timing.cpp', 'test_present_timing_layer.cpp', protocols_client_src, swapchain_server_header],
+-		dependencies: [catch2_dep, vkroots_dep, vulkan_dep, dep_xcb, dep_x11, dep_x11_xcb, glm_dep, wayland_client, wayland_server],
++		dependencies: [catch2_dep, vkroots_dep, vulkan_dep, dep_xcb, dep_x11, dep_x11_xcb, wayland_client, wayland_server],
++		include_directories: [glm_include]
+ 	)
+ 	test('present_timing', present_timing_layer_tests, args: ['[present_timing]'])
+ 	test('present_timing_layer', present_timing_layer_tests, args: ['[present_timing_layer]'])
 -- 
 2.55.0
 
