@@ -19,7 +19,7 @@ EAPI=8
 # inherit lists eclasses to inherit functions from. For example, an ebuild
 # that needs the eautoreconf function from autotools.eclass won't work
 # without the following line:
-inherit git-r3 udev linux-info
+inherit git-r3
 #
 # Eclasses tend to list descriptions of how to use their functions properly.
 # Take a look at the eclass/ directory for more examples.
@@ -105,6 +105,7 @@ RDEPEND="sys-kernel/linux-firmware"
 # Build-time dependencies that are executed during the emerge process, and
 # only need to be present in the native build system (CBUILD). Example:
 #BDEPEND="virtual/pkgconfig"
+RESTRICT="strip"
 
 src_configure() {
 	default
@@ -143,10 +144,14 @@ src_configure() {
 # The following src_install function is implemented as default by portage, so
 # you only need to call it, if you need different behaviour.
 src_install() {
+	# rm commands are for avoiding collisions with linux-firmware
 	rm -rf radxa-firmware/lib/firmware/{r8a779x*,arm,cypress,rtw89}
+	rm -rf radxa-firmware-sc8280xp/lib/firmware/qcom/{sc8280xp/radxa/dragon-q8b/qcadsp8280.mbn,vpu/vpu20_p4_gen2_s6.mbn}
 	default
 	insinto /lib
 	doins -r radxa-firmware/lib/firmware
 	insinto /lib/firmware
-	doins -r radxa-firmware-{sc8280xp,qcs6490}
+	doins -r radxa-firmware-sc8280xp/lib/firmware/qcom
+	insinto /usr/share
+	doins -r radxa-firmware-{sc8280xp,qcs6490}/usr/share/qcom
 }
