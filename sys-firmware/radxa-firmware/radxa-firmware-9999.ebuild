@@ -147,4 +147,6 @@ src_install() {
 	default
 	insinto /lib
 	doins -r radxa-firmware/lib/firmware
+	insinto /lib/firmware
+	doins -r radxa-firmware-{sc8280xp,qcs6490}
 }
