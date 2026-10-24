@@ -33,6 +33,7 @@ HOMEPAGE="https://github.com/radxa-pkg/radxa-firmware"
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
 EGIT_REPO_URI="${HOMEPAGE}.git"
+SRC_URI="https://github.com/armbian/firmware/raw/refs/heads/master/qcom/sc8280xp/SC8280XP-Radxa-Dragon-Q8B-tplg.bin"
 
 # Source directory; the dir where the sources can be found (automatically
 # unpacked) inside ${WORKDIR}.  The default value for S is ${WORKDIR}/${P}
@@ -154,4 +155,6 @@ src_install() {
 	doins -r radxa-firmware-sc8280xp/lib/firmware/qcom
 	insinto /usr/share
 	doins -r radxa-firmware-{sc8280xp,qcs6490}/usr/share/qcom
+	insinto /usr/lib/firmware/qcom/sc8280xp
+	doins $DISTDIR/SC8280XP-Radxa-Dragon-Q8B-tplg.bin
 }
