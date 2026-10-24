@@ -69,7 +69,7 @@ PATCHES=(
 	# http://www.spinics.net/lists/linux-bluetooth/msg58739.html
 	# https://bugs.gentoo.org/539844
 	# https://github.com/bluez/bluez/issues/1650
-	"${FILESDIR}"/${PN}-udevadm-path-r1.patch
+#	"${FILESDIR}"/${PN}-udevadm-path-r1.patch
 )
 
 pkg_setup() {
@@ -193,7 +193,7 @@ multilib_src_install() {
 			# https://bugzilla.redhat.com/show_bug.cgi?id=1141909
 			# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=720486
 			# https://bugs.archlinux.org/task/37686
-			dobin attrib/gatttool
+			#dobin attrib/gatttool
 			# https://bugzilla.redhat.com/show_bug.cgi?id=1699680
 			dobin tools/avinfo
 		fi
