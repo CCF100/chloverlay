@@ -91,6 +91,8 @@ HOMEPAGE="https://canonical.com/mir"
 #	${CARGO_CRATE_URIS}
 #"
 EGIT_REPO_URI="https://github.com/canonical/mir.git"
+EGIT_BRANCH=mir-1.8-buildable
+
 LICENSE="|| ( GPL-2 GPL-3 ) || ( LGPL-2.1 LGPL-3 )"
 # Dependent crate licenses
 LICENSE+=" Apache-2.0 MIT Unicode-3.0 ZLIB"
@@ -153,6 +155,7 @@ src_configure() {
 	use X && platforms+=( x11 )
 
 	local mycmakeargs=(
+               -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 		# wlcs is not packaged
 		-DMIR_ENABLE_WLCS_TESTS=OFF
 		-DMIR_ENABLE_TESTS="$(usex test)"
