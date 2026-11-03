@@ -99,7 +99,7 @@ RDEPEND="media-video/mpv"
 # Build-time dependencies that need to be binary compatible with the system
 # being built (CHOST). These include libraries that we link against.
 # The below is valid if the same run-time depends are required to compile.
-DEPEND="${RDEPEND} dev-lang/flutter-bin media-video/mpv"
+DEPEND="${RDEPEND} virtual/flutter media-video/mpv"
 
 # Build-time dependencies that are executed during the emerge process, and
 # only need to be present in the native build system (CBUILD). Example:
