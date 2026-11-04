@@ -32,7 +32,11 @@ HOMEPAGE="https://codeberg.org/DanctNIX/linux-pinetab2"
 
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
-SRC_URI="ftp://foo.example.org/${P}.tar.gz"
+EGIT_REPO_URI="${HOMEPAGE}"
+EGIT_COMMIT="v${PV}-danctnix1"
+SRC_URI="https://codeberg.org/DanctNIX/danctnix-packages/raw/commit/8dd9d5a98fbf3544995f23b6a909e2cb679d7589/pine64/linux-pinetab2/config -> pinetab2-config"
+#	 https://distfiles.gentoo.org/pub/proj/dist-kernel/config/fedora-kernel-config-7.3.1-gentoo.tar.xz
+#"
 
 # Source directory; the dir where the sources can be found (automatically
 # unpacked) inside ${WORKDIR}.  The default value for S is ${WORKDIR}/${P}
@@ -75,12 +79,12 @@ SLOT="0"
 # exists for.  If the package was for an x86 binary package, then
 # KEYWORDS would be set like this: KEYWORDS="-* x86"
 # Do not use KEYWORDS="*"; this is not valid in an ebuild context.
-KEYWORDS="~amd64"
+KEYWORDS="~arm64"
 
 # Comprehensive list of any and all USE flags leveraged in the ebuild,
 # with some exceptions, e.g., ARCH specific flags like "amd64" or "ppc".
 # Not needed if the ebuild doesn't use any USE flags.
-IUSE="gnome X"
+IUSE="debug hardened"
 
 # A space delimited list of portage features to restrict. man 5 ebuild
 # for details.  Usually not needed.
@@ -106,10 +110,18 @@ IUSE="gnome X"
 # only need to be present in the native build system (CBUILD). Example:
 #BDEPEND="virtual/pkgconfig"
 
+src_unpack() {
+	default
+	git-r3_src_unpack
+}
 
 # The following src_configure function is implemented as default by portage, so
 # you only need to call it if you need a different behaviour.
-#src_configure() {
+src_configure() {
+	#cp -v "${WORKDIR}/fedora-kernel-config-7.3.1-gentoo/kernel-aarch64-fedora.config" .config || die
+	cp -v "${DISTDIR}/pinetab2-config" .config || die
+	kernel-build_src_configure
+	#kernel-build_merge_configs ${WORKDIR}/pinetab2-config
 	# Most open-source packages use GNU autoconf for configuration.
 	# The default, quickest (and preferred) way of running configure is:
 	#econf
@@ -128,7 +140,7 @@ IUSE="gnome X"
 	# Note the use of --infodir and --mandir, above. This is to make
 	# this package FHS 2.2-compliant.  For more information, see
 	#   https://wiki.linuxfoundation.org/lsb/fhs
-#}
+}
 
 # The following src_compile function is implemented as default by portage, so
 # you only need to call it, if you need different behaviour.
