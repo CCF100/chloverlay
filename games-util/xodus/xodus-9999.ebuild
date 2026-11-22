@@ -94,12 +94,12 @@ IUSE=""
 # had installed on your system when you tested the package.  Then
 # other users hopefully won't be caught without the right version of
 # a dependency.
-#RDEPEND=""
+RDEPEND="dev-libs/protobuf"
 
 # Build-time dependencies that need to be binary compatible with the system
 # being built (CHOST). These include libraries that we link against.
 # The below is valid if the same run-time depends are required to compile.
-#DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}"
 
 # Build-time dependencies that are executed during the emerge process, and
 # only need to be present in the native build system (CBUILD). Example:
@@ -150,6 +150,11 @@ src_unpack() {
 
 # The following src_install function is implemented as default by portage, so
 # you only need to call it, if you need different behaviour.
+
+src_install() {
+    cargo_src_install --path crates/xodus   # replace with the real member path
+}
+
 #src_install() {
 	# You must *personally verify* that this trick doesn't install
 	# anything outside of DESTDIR; do this by reading and
