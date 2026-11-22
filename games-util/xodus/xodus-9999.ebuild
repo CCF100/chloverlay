@@ -94,7 +94,10 @@ IUSE=""
 # had installed on your system when you tested the package.  Then
 # other users hopefully won't be caught without the right version of
 # a dependency.
-RDEPEND="dev-libs/protobuf"
+RDEPEND="
+dev-libs/protobuf
+dev-libs/protobuf-c
+"
 
 # Build-time dependencies that need to be binary compatible with the system
 # being built (CHOST). These include libraries that we link against.
@@ -152,31 +155,8 @@ src_unpack() {
 # you only need to call it, if you need different behaviour.
 
 src_install() {
-    cargo_src_install --path crates/xodus   # replace with the real member path
+	for i in ${S}/crates/xodus-*; do
+		cargo_src_install --path ${i}
+	done
 }
 
-#src_install() {
-	# You must *personally verify* that this trick doesn't install
-	# anything outside of DESTDIR; do this by reading and
-	# understanding the install part of the Makefiles.
-	# This is the preferred way to install.
-	#emake DESTDIR="${D}" install
-
-	# When you hit a failure with emake, do not just use make. It is
-	# better to fix the Makefiles to allow proper parallelization.
-	# If you fail with that, use "emake -j1", it's still better than make.
-
-	# For Makefiles that don't make proper use of DESTDIR, setting
-	# prefix is often an alternative.  However if you do this, then
-	# you also need to specify mandir and infodir, since they were
-	# passed to ./configure as absolute paths (overriding the prefix
-	# setting).
-	#emake \
-	#	prefix="${D}"/usr \
-	#	mandir="${D}"/usr/share/man \
-	#	infodir="${D}"/usr/share/info \
-	#	libdir="${D}"/usr/$(get_libdir) \
-	#	install
-	# Again, verify the Makefiles!  We don't want anything falling
-	# outside of ${D}.
-#}
