@@ -155,7 +155,8 @@ src_unpack() {
 # you only need to call it, if you need different behaviour.
 
 src_install() {
-	systemd_douserunit ${FILESDIR}/xodus.{service,socket}
+	systemd_douserunit ${FILESDIR}/xodus.service
+	#{service,socket}
 	for i in ${S}/crates/xodus-*; do
 		cargo_src_install --path ${i}
 	done
