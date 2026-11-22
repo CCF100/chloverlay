@@ -1,0 +1,11 @@
+[Unit]
+Description=Socket for xodus service activation
+PartOf=xodus.service
+
+[Socket]
+NoDelay=true
+ListenStream=%t/xodus.sock
+
+
+[Install]
+WantedBy=sockets.target

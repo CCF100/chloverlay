@@ -18,7 +18,7 @@ EAPI=8
 # inherit lists eclasses to inherit functions from. For example, an ebuild
 # that needs the eautoreconf function from autotools.eclass won't work
 # without the following line:
-inherit cargo git-r3
+inherit cargo git-r3 systemd
 #
 # Eclasses tend to list descriptions of how to use their functions properly.
 # Take a look at the eclass/ directory for more examples.
@@ -155,6 +155,7 @@ src_unpack() {
 # you only need to call it, if you need different behaviour.
 
 src_install() {
+	systemd_douserunit ${FILESDIR}/xodus.{service,socket}
 	for i in ${S}/crates/xodus-*; do
 		cargo_src_install --path ${i}
 	done
