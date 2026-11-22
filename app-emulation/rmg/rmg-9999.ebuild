@@ -20,6 +20,7 @@ RDEPEND="${DEPEND} dev-libs/hidapi media-libs/libsamplerate media-libs/speexdsp 
 BDEPEND="dev-vcs/git dev-lang/nasm dev-build/cmake dev-util/vulkan-headers media-libs/sdl3-net"
 
 src_configure() {
+	sed -i '/FIND_PACKAGE( zstd REQUIRED )/Id'  Source/3rdParty/mupen64plus-video-GLideN64/src/GLideNHQ/CMakeLists.txt ||  die
         #mkdir ${S}/build
         local mycmakeargs=(
                 -S .

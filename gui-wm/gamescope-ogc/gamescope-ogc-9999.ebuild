@@ -41,7 +41,7 @@ RDEPEND="
 	>=dev-libs/libinput-1.14.0:=
 	>=dev-libs/wayland-1.23.1
 	gui-libs/libdecor
-	<media-libs/libdisplay-info-0.4:=
+	media-libs/libdisplay-info
 	media-libs/vulkan-loader
 	sys-apps/hwdata
 	sys-libs/libcap

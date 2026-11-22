@@ -105,6 +105,12 @@ DEPEND="${RDEPEND} virtual/flutter media-video/mpv"
 # only need to be present in the native build system (CBUILD). Example:
 BDEPEND="sys-apps/gendesk"
 
+src_unpack() {
+        git-r3_src_unpack
+	git-r3_fetch "https://github.com/isar-community/isar-community.git" refs/heads/v3
+	git-r3_checkout "https://github.com/isar-community/isar-community.git" ${WORKDIR}/isar-community
+}
+
 # The following src_configure function is implemented as default by portage, so
 # you only need to call it if you need a different behaviour.
 src_configure() {
@@ -128,12 +134,19 @@ src_configure() {
 # The following src_compile function is implemented as default by portage, so
 # you only need to call it, if you need different behaviour.
 src_compile() {
+	git config --global --add safe.directory /opt/flutter
 	# one of the dependencies really wants rustup for some reason?
 	yes '' | RUSTUP_INIT_SKIP_PATH_CHECK=yes rustup-init
 	. "$HOME/.cargo/env"
 	flutter clean -v || die
 	flutter pub get -v || die
 	flutter build linux -v --release --no-pub || die
+
+	if [[ ${ARCH} == "arm64" ]]; then
+	   ls -lah ${WORKDIR}/isar-community
+	   cd ${WORKDIR}/isar-community
+	   cargo build --release
+	fi
 }
 
 # The following src_install function is implemented as default by portage, so
@@ -145,16 +158,20 @@ src_install() {
 	# This is the preferred way to install.
 	#emake DESTDIR="${D}" install
 
-	if [[ ${ARCH} == "amd64" ]]; then
-		folder="x64"
-	elif [[ ${ARCH} == "aarch64" ]]; then
-	        folder="arm64"
-	fi
-
 	exeinto /usr/lib/${PN}
-	insinto /usr/lib/${PN}
-	doexe build/linux/$folder/release/bundle/finamp
+        insinto /usr/lib/${PN}
+	if [[ ${ARCH} == "amd64" ]]; then
+                folder="x64"
+        elif [[ ${ARCH} == "arm64" ]]; then
+		folder="arm64"
+	fi
 	doins -r build/linux/$folder/release/bundle/lib
+	if [[ ${ARCH} == "arm64" ]]; then
+	        insinto /usr/lib/${PN}/lib
+		doins ${WORKDIR}/isar-community/target/release/libisar.so
+	fi
+	doexe build/linux/$folder/release/bundle/finamp
+	#doins -r build/linux/$folder/release/bundle/lib
 	doins -r build/linux/$folder/release/bundle/data
 	into /usr
 	dobin ${WORKDIR}/${PN}
