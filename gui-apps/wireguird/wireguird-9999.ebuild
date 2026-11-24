@@ -136,5 +136,7 @@ src_install() {
 	dobin ${PN}
 	domenu deb/usr/share/applications/${PN}.desktop
 	doicon -s scalable Icon/*.svg
-
+	for i in {16,32,48,128,256}; do
+		doicon -s $i "Icon/${i}x${i}"
+	done
 }
