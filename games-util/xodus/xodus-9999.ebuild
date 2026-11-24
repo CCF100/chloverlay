@@ -116,26 +116,9 @@ src_unpack() {
 
 # The following src_configure function is implemented as default by portage, so
 # you only need to call it if you need a different behaviour.
-#src_configure() {
-	# Most open-source packages use GNU autoconf for configuration.
-	# The default, quickest (and preferred) way of running configure is:
-	#econf
-	#
-	# You could use something similar to the following lines to
-	# configure your package before compilation.  The "|| die" portion
-	# at the end will stop the build process if the command fails.
-	# You should use this at the end of critical commands in the build
-	# process.  (Hint: Most commands are critical, that is, the build
-	# process should abort if they aren't successful.)
-	#./configure \
-	#	--host=${CHOST} \
-	#	--prefix=/usr \
-	#	--infodir=/usr/share/info \
-	#	--mandir=/usr/share/man || die
-	# Note the use of --infodir and --mandir, above. This is to make
-	# this package FHS 2.2-compliant.  For more information, see
-	#   https://wiki.linuxfoundation.org/lsb/fhs
-#}
+src_configure() {
+	cargo_src_configure --frozen
+}
 
 # The following src_compile function is implemented as default by portage, so
 # you only need to call it, if you need different behaviour.
