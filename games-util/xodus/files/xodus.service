@@ -1,0 +1,12 @@
+[Unit]
+Description=Xodus Xbox Gaming Service
+#Requires=xodus.socket
+After=default.target
+
+[Service]
+ExecStart=/usr/bin/xodus-service
+Type=simple
+
+[Install]
+WantedBy=default.target
+
