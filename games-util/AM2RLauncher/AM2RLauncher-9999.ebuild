@@ -60,7 +60,12 @@ IUSE=""
 #RESTRICT="strip"
 
 # Run-time dependencies.
-RDEPEND="dev-libs/libappindicator >=dev-util/xdelta-3:3[lzma]"
+RDEPEND="
+	dev-libs/libappindicator
+	>=dev-util/xdelta-3:3[lzma]
+	sys-fs/squashfs-tools[lz4,lzma,lzo,xattr,zstd]
+	sys-fs/fuse:0
+"
 
 # Build-time dependencies that need to be binary compatible with the system.
 #DEPEND="${RDEPEND}"
