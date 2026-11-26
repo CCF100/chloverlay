@@ -42,14 +42,17 @@ NUGETS="
 	system.security.principal.windows@5.0.0
 	system.windows.extensions@6.0.0
 "
-inherit git-r3 dotnet-pkg
+inherit git-r3 dotnet-pkg desktop xdg
 
-DOTNET_PKG_BAD_PROJECTS=( "${S}/AM2RLauncher.Mac/AM2RLauncher.Mac.csproj" "${S}/AM2RLauncher.Wpf/AM2RLauncher.Wpf.csproj" )
+S="${WORKDIR}/${P}/AM2RLauncher"
+DOTNET_PKG_BAD_PROJECTS=(
+	"${S}/AM2RLauncher.Mac/AM2RLauncher.Mac.csproj"
+	"${S}/AM2RLauncher.Wpf/AM2RLauncher.Wpf.csproj"
+)
 DESCRIPTION="A front-end application that simplifies installing the latest AM2R-Community-Updates, creating APKs for Android use, as well as Mods for AM2R."
 HOMEPAGE="https://github.com/AM2R-Community-Developers/"
 EGIT_REPO_URI="${HOMEPAGE}/AM2RLauncher.git"
 SRC_URI+=" ${NUGET_URIS} "
-S="${WORKDIR}/${P}/AM2RLauncher"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS=""
@@ -73,5 +76,10 @@ src_unpack() {
 src_install() {
 	dotnet-pkg_src_install
 	mkdir ${D}/usr/bin
-	dosym /usr/share/AM2RLauncher-9999/AM2RLauncher.Gtk /usr/bin/AM2RLauncher
+	dosym /usr/share/${PN}/${P}.Gtk /usr/bin/${PN}
+	domenu distribution/linux/${PN}.desktop
+	doicon -s 128 distribution/linux/${PN}.png
+
+        insinto /usr/share/metainfo
+        doins distribution/linux/${PN}.appdata.xml
 }
