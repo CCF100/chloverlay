@@ -60,7 +60,7 @@ IUSE=""
 #RESTRICT="strip"
 
 # Run-time dependencies.
-RDEPEND="dev-libs/libappindicator"
+RDEPEND="dev-libs/libappindicator >=dev-util/xdelta-3:3[lzma]"
 
 # Build-time dependencies that need to be binary compatible with the system.
 #DEPEND="${RDEPEND}"
