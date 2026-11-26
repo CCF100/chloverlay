@@ -76,7 +76,7 @@ src_unpack() {
 src_install() {
 	dotnet-pkg_src_install
 	mkdir ${D}/usr/bin
-	dosym /usr/share/${PN}/${P}.Gtk /usr/bin/${PN}
+	dosym /usr/share/${PN}/${PN}.Gtk /usr/bin/${PN}
 	domenu distribution/linux/${PN}.desktop
 	doicon -s 128 distribution/linux/${PN}.png
 
